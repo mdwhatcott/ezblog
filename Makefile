@@ -10,3 +10,6 @@ fmt:
 
 install: test
 	go install -ldflags="-X 'main.Version=$(VERSION)'" github.com/mdwhatcott/ezblog/cmd/...
+
+manual:
+	make install && ez -source cmd/ez/example.md -dest . && cat hello-world/index.html
