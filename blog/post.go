@@ -3,10 +3,10 @@ package blog
 import (
 	"bytes"
 	"encoding/json"
-	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/mdwhatcott/ezblog/os"
 	"github.com/yuin/goldmark"
 )
 
