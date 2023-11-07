@@ -28,5 +28,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	blog.RenderPost(config.SourceFile, config.DestDir)
+	blog.RenderPost(fs{}, config.SourceFile, config.DestDir)
+}
+
+type fs struct{}
+
+func (fs) ReadFile(path string) ([]byte, error) {
+	return os.ReadFile(path)
+}
+func (fs) WriteFile(name string, data []byte, perm os.FileMode) error {
+	return os.WriteFile(name, data, perm)
 }

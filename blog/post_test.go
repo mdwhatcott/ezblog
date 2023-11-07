@@ -1,10 +1,8 @@
 package blog
 
 import (
-	os2 "os"
+	"os"
 	"testing"
-
-	"github.com/mdwhatcott/ezblog/os"
 )
 
 const inputFile = `
@@ -32,17 +30,23 @@ const expectedContent = `<html>
 </body>
 </html>`
 
+type FakeFS struct {
+	disk map[string]string
+}
+
+func (this *FakeFS) ReadFile(path string) ([]byte, error) {
+	return []byte(this.disk[path]), nil
+}
+
+func (this *FakeFS) WriteFile(name string, data []byte, perm os.FileMode) error {
+	this.disk[name] = string(data)
+	return nil
+}
+
 func Test(t *testing.T) {
 	disk := map[string]string{"/input.md": inputFile}
-	os.ReadFile = func(path string) ([]byte, error) {
-		return []byte(disk[path]), nil
-	}
-	os.WriteFile = func(name string, data []byte, perm os2.FileMode) error {
-		disk[name] = string(data)
-		return nil
-	}
 
-	RenderPost("/input.md", "/output/")
+	RenderPost(&FakeFS{disk}, "/input.md", "/output/")
 
 	actualContent := disk["/output/hello-world/index.html"]
 	if actualContent != expectedContent {

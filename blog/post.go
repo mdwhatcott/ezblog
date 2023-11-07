@@ -3,15 +3,20 @@ package blog
 import (
 	"bytes"
 	"encoding/json"
+	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/mdwhatcott/ezblog/os"
 	"github.com/yuin/goldmark"
 )
 
-func RenderPost(sourcePath, destDir string) {
-	source, _ := os.ReadFile(sourcePath)
+type FS interface {
+	ReadFile(path string) ([]byte, error)
+	WriteFile(name string, data []byte, perm os.FileMode) error
+}
+
+func RenderPost(fs FS, sourcePath, destDir string) {
+	source, _ := fs.ReadFile(sourcePath)
 	segments := bytes.Split(source, []byte("\n+++\n"))
 	frontMatter := make(map[string]string)
 	_ = json.Unmarshal(segments[0], &frontMatter)
@@ -24,7 +29,7 @@ func RenderPost(sourcePath, destDir string) {
 		"{{ Body }}", content.String(),
 	).Replace(pageTemplate))
 	path := filepath.Join(destDir, frontMatter["slug"], "index.html")
-	_ = os.WriteFile(path, rendered, 0644)
+	_ = fs.WriteFile(path, rendered, 0644)
 }
 
 const pageTemplate = `<html>
