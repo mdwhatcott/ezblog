@@ -3,11 +3,17 @@ package blog
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/yuin/goldmark"
+)
+
+var (
+	ErrReadFile = errors.New("read file")
 )
 
 type FS interface {
@@ -23,8 +29,11 @@ func NewRenderer(fs FS) *Renderer {
 	return &Renderer{fs: fs}
 }
 
-func (this *Renderer) RenderPost(sourcePath, destDir string) {
-	source, _ := this.fs.ReadFile(sourcePath)
+func (this *Renderer) RenderPost(sourcePath, destDir string) error {
+	source, err := this.fs.ReadFile(sourcePath)
+	if err != nil {
+		return fmt.Errorf("%w: %w", ErrReadFile, err)
+	}
 	segments := bytes.Split(source, []byte("\n+++\n"))
 	frontMatter := make(map[string]string)
 	_ = json.Unmarshal(segments[0], &frontMatter)
@@ -38,6 +47,7 @@ func (this *Renderer) RenderPost(sourcePath, destDir string) {
 	).Replace(pageTemplate))
 	path := filepath.Join(destDir, frontMatter["slug"], "index.html")
 	_ = this.fs.WriteFile(path, rendered, 0644)
+	return nil
 }
 
 const pageTemplate = `<html>
