@@ -52,7 +52,7 @@ func (this *Renderer) RenderPost(sourcePath, destDir string) error {
 	frontMatter := make(map[string]string)
 	err = json.Unmarshal(segments[0], &frontMatter)
 	if err != nil {
-		return fmt.Errorf("%w: %w", ErrFrontMatter, err)
+		return nil
 	}
 	this.log.Printf("front matter: %v", frontMatter)
 
