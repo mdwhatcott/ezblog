@@ -3,11 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/mdwhatcott/ezblog/blog"
+	"github.com/yuin/goldmark"
 )
 
 var Version = "dev"
@@ -28,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	renderer := blog.NewRenderer(fs{})
+	renderer := blog.NewRenderer(fs{}, md{inner: goldmark.New()})
 	err = renderer.RenderPost(config.SourceFile, config.DestDir)
 	if err != nil {
 		log.Fatal(err)
@@ -42,4 +44,12 @@ func (fs) ReadFile(path string) ([]byte, error) {
 }
 func (fs) WriteFile(name string, data []byte, perm os.FileMode) error {
 	return os.WriteFile(name, data, perm)
+}
+
+type md struct {
+	inner goldmark.Markdown
+}
+
+func (this md) Convert(source []byte, writer io.Writer) error {
+	return this.inner.Convert(source, writer)
 }
