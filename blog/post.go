@@ -15,8 +15,16 @@ type FS interface {
 	WriteFile(name string, data []byte, perm os.FileMode) error
 }
 
-func RenderPost(fs FS, sourcePath, destDir string) {
-	source, _ := fs.ReadFile(sourcePath)
+type Renderer struct {
+	fs FS
+}
+
+func NewRenderer(fs FS) *Renderer {
+	return &Renderer{fs: fs}
+}
+
+func (this *Renderer) RenderPost(sourcePath, destDir string) {
+	source, _ := this.fs.ReadFile(sourcePath)
 	segments := bytes.Split(source, []byte("\n+++\n"))
 	frontMatter := make(map[string]string)
 	_ = json.Unmarshal(segments[0], &frontMatter)
@@ -29,7 +37,7 @@ func RenderPost(fs FS, sourcePath, destDir string) {
 		"{{ Body }}", content.String(),
 	).Replace(pageTemplate))
 	path := filepath.Join(destDir, frontMatter["slug"], "index.html")
-	_ = fs.WriteFile(path, rendered, 0644)
+	_ = this.fs.WriteFile(path, rendered, 0644)
 }
 
 const pageTemplate = `<html>

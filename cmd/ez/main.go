@@ -28,7 +28,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	blog.RenderPost(fs{}, config.SourceFile, config.DestDir)
+	renderer := blog.NewRenderer(fs{})
+	renderer.RenderPost(config.SourceFile, config.DestDir)
 }
 
 type fs struct{}

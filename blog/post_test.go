@@ -44,11 +44,12 @@ func (this *FakeFS) WriteFile(name string, data []byte, perm os.FileMode) error 
 }
 
 func Test(t *testing.T) {
-	disk := map[string]string{"/input.md": inputFile}
+	fs := &FakeFS{map[string]string{"/input.md": inputFile}}
+	renderer := NewRenderer(fs)
 
-	RenderPost(&FakeFS{disk}, "/input.md", "/output/")
+	renderer.RenderPost("/input.md", "/output/")
 
-	actualContent := disk["/output/hello-world/index.html"]
+	actualContent := fs.disk["/output/hello-world/index.html"]
 	if actualContent != expectedContent {
 		t.Errorf("\nwant: %s\ngot:  %s", expectedContent, actualContent)
 	}
