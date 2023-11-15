@@ -27,16 +27,22 @@ type MD interface {
 	Convert(source []byte, writer io.Writer) error
 }
 
-type Renderer struct {
-	fs FS
-	md MD
+type Log interface {
+	Printf(format string, args ...any)
 }
 
-func NewRenderer(fs FS, md MD) *Renderer {
-	return &Renderer{fs: fs, md: md}
+type Renderer struct {
+	fs  FS
+	md  MD
+	log Log
+}
+
+func NewRenderer(fs FS, md MD, log Log) *Renderer {
+	return &Renderer{fs: fs, md: md, log: log}
 }
 
 func (this *Renderer) RenderPost(sourcePath, destDir string) error {
+	this.log.Printf("reading file: [%s]", sourcePath)
 	source, err := this.fs.ReadFile(sourcePath)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrReadFile, err)
@@ -48,6 +54,7 @@ func (this *Renderer) RenderPost(sourcePath, destDir string) error {
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrFrontMatter, err)
 	}
+	this.log.Printf("front matter: %v", frontMatter)
 
 	var content bytes.Buffer
 	err = this.md.Convert(segments[1], &content)
@@ -63,6 +70,7 @@ func (this *Renderer) RenderPost(sourcePath, destDir string) error {
 	).Replace(pageTemplate))
 
 	path := filepath.Join(destDir, frontMatter["slug"], "index.html")
+	this.log.Printf("writing file: [%s]", path)
 	err = this.fs.WriteFile(path, rendered, 0644)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrWriteFile, err)

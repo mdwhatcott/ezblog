@@ -3,6 +3,7 @@ package blog
 import (
 	"errors"
 	"io"
+	"log"
 	"os"
 	"testing"
 
@@ -51,7 +52,7 @@ type Fixture struct {
 
 func (this *Fixture) Setup() {
 	this.disk = make(map[string]string)
-	this.renderer = NewRenderer(this, this)
+	this.renderer = NewRenderer(this, this, log.New(this, "["+this.Name()+"] ", 0))
 }
 
 func (this *Fixture) ReadFile(path string) ([]byte, error) {

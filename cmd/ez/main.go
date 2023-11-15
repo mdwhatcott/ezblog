@@ -30,7 +30,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	renderer := blog.NewRenderer(fs{}, md{inner: goldmark.New()})
+	logger := log.New(os.Stderr, "", log.Lshortfile|log.Lmicroseconds)
+	renderer := blog.NewRenderer(fs{}, md{inner: goldmark.New()}, logger)
 	err = renderer.RenderPost(config.SourceFile, config.DestDir)
 	if err != nil {
 		log.Fatal(err)
