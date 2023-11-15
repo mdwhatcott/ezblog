@@ -3,6 +3,9 @@ package blog
 import (
 	"os"
 	"testing"
+
+	"github.com/smarty/assertions/should"
+	"github.com/smarty/gunit"
 )
 
 const inputFile = `
@@ -30,27 +33,34 @@ const expectedContent = `<html>
 </body>
 </html>`
 
-type FakeFS struct {
-	disk map[string]string
+func TestFixture(t *testing.T) {
+	gunit.Run(new(Fixture), t)
 }
 
-func (this *FakeFS) ReadFile(path string) ([]byte, error) {
+type Fixture struct {
+	*gunit.Fixture
+	disk     map[string]string
+	renderer *Renderer
+}
+
+func (this *Fixture) Setup() {
+	this.disk = make(map[string]string)
+	this.renderer = NewRenderer(this)
+}
+
+func (this *Fixture) ReadFile(path string) ([]byte, error) {
 	return []byte(this.disk[path]), nil
 }
 
-func (this *FakeFS) WriteFile(name string, data []byte, perm os.FileMode) error {
+func (this *Fixture) WriteFile(name string, data []byte, _ os.FileMode) error {
 	this.disk[name] = string(data)
 	return nil
 }
 
-func Test(t *testing.T) {
-	fs := &FakeFS{map[string]string{"/input.md": inputFile}}
-	renderer := NewRenderer(fs)
+func (this *Fixture) TestRenderPost() {
+	this.disk["/input.md"] = inputFile
 
-	renderer.RenderPost("/input.md", "/output/")
+	this.renderer.RenderPost("/input.md", "/output/")
 
-	actualContent := fs.disk["/output/hello-world/index.html"]
-	if actualContent != expectedContent {
-		t.Errorf("\nwant: %s\ngot:  %s", expectedContent, actualContent)
-	}
+	this.So(this.disk["/output/hello-world/index.html"], should.Equal, expectedContent)
 }

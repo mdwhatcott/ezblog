@@ -1,2 +1,6 @@
+github.com/smarty/assertions v1.15.1 h1:812oFiXI+G55vxsFf+8bIZ1ux30qtkdqzKbEFwyX3Tk=
+github.com/smarty/assertions v1.15.1/go.mod h1:yABtdzeQs6l1brC900WlRNwj6ZR55d7B+E8C6HtKdec=
+github.com/smarty/gunit v1.5.0 h1:OmG6a/rgi7qCjlQis6VjXbvx/WqZ8I6xSlbfN4YB5MY=
+github.com/smarty/gunit v1.5.0/go.mod h1:uAeNibUD292KZRcg5OTy7lb6WR5++UC0BQOzNuiRzpU=
 github.com/yuin/goldmark v1.5.6 h1:COmQAWTCcGetChm3Ig7G/t8AFAN00t+o8Mt4cf7JpwA=
 github.com/yuin/goldmark v1.5.6/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
