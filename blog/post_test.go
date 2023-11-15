@@ -93,6 +93,13 @@ func (this *Fixture) TestRenderPost_ReadFileErr() {
 
 	this.assertErrorResult(err, ErrReadFile)
 }
+func (this *Fixture) TestRenderPost_BadJSONFrontMatter() {
+	this.disk["/input.md"] = "bad json\n+++\ncontent"
+
+	err := this.render()
+
+	this.assertErrorResult(err, ErrFrontMatter)
+}
 func (this *Fixture) TestRenderPost_MarkdownErr() {
 	this.disk["/input.md"] = inputFile
 	this.markdownErr = errors.New("boink")
