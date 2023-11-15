@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mdwhatcott/ezblog/gunit"
 	"github.com/smarty/assertions/should"
-	"github.com/smarty/gunit"
 	"github.com/yuin/goldmark"
 )
 
